@@ -38,13 +38,11 @@ RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key ad
 
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
-# Install Postgres, PL/Python, PL/V8
+# Install Postgres
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
   postgresql-$VERSION \
   postgresql-contrib-$VERSION \
   postgresql-server-dev-$VERSION \
-  postgresql-plpython-$VERSION \
-  postgresql-$VERSION-plv8 \
 # Install WAL-E dependencies
   libxml2-dev \
   libxslt1-dev \
