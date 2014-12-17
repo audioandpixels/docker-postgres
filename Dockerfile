@@ -1,13 +1,9 @@
 FROM       phusion/baseimage:0.9.12
-MAINTAINER Abe Voelker <abe@abevoelker.com>
+MAINTAINER Jason Cox <jason@audioandpixels.com>
 
 ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.3
-
-# Temporary hack around a Docker Hub `docker build` issue. See:
-# https://github.com/docker/docker/issues/6345#issuecomment-49245365
-RUN ln -s -f /bin/true /usr/bin/chfn
 
 # Disable SSH and existing cron jobs
 RUN rm -rf /etc/service/sshd \
@@ -21,54 +17,28 @@ RUN rm -rf /etc/service/sshd \
 
 # Ensure UTF-8 locale
 COPY locale /etc/default/locale
-RUN locale-gen en_US.UTF-8 &&\
-  dpkg-reconfigure locales
+RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 # Update APT
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
+RUN apt-get update
 
 # Install build dependencies
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y wget
-
-# Add PostgreSQL Global Development Group apt source
-RUN echo "deb http://apt.postgresql.org/pub/repos/apt/ trusty-pgdg main" > /etc/apt/sources.list.d/pgdg.list
-
-# Add PGDG repository key
-RUN wget -qO - http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | apt-key add -
-
-RUN DEBIAN_FRONTEND=noninteractive apt-get update
+RUN apt-get install -y wget
 
 # Install Postgres
-RUN DEBIAN_FRONTEND=noninteractive apt-get install -y \
-  postgresql-$VERSION \
-  postgresql-contrib-$VERSION \
-  postgresql-server-dev-$VERSION \
-# Install WAL-E dependencies
-  libxml2-dev \
-  libxslt1-dev \
-  python-dev \
-  python-pip \
-  daemontools \
-  libevent-dev \
-  lzop \
-  pv &&\
-  pip install virtualenv
+RUN apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresql-server-dev-$VERSION
 
-# Install WAL-E into a virtualenv
-RUN virtualenv /var/lib/postgresql/wal-e &&\
-  . /var/lib/postgresql/wal-e/bin/activate &&\
-  pip install wal-e &&\
-  ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
+# Install WAL-E dependencies
+RUN apt-get install -y libxml2-dev libxslt1-dev python-dev python-pip daemontools libevent-dev lzop pv
+
+# Install WAL-E
+RUN pip install wal-e && ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
 
 # Create directory for storing secret WAL-E environment variables
-RUN umask u=rwx,g=rx,o= &&\
-  mkdir -p /etc/wal-e.d/env &&\
-  chown -R root:postgres /etc/wal-e.d
+RUN umask u=rwx,g=rx,o= && mkdir -p /etc/wal-e.d/env && chown -R root:postgres /etc/wal-e.d
 
 # Remove build dependencies and clean up APT and temporary files
-RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y wget &&\
-  apt-get clean &&\
-  rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+RUN apt-get remove --purge -y wget && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy basic Postgres configs with values suitable for development
 # (note: these should be overridden in production!)
@@ -76,7 +46,7 @@ COPY ./pg_hba.conf     /etc/postgresql/$VERSION/main/
 COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
 # Copy wal-e cron
-COPY ./wal-e.conf /etc/cron.d/
+COPY ./wal-e /etc/cron.d/
 
 # Copy ENV
 #COPY ./AWS_ACCESS_KEY_ID      /etc/wal-e.d/env/
@@ -99,8 +69,7 @@ RUN chmod 755 /etc/service/cron/run /etc/service/postgres/run
 USER postgres
 
 RUN /etc/init.d/postgresql start &&\
-  psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" &&\
-  /etc/init.d/postgresql stop
+  psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" && /etc/init.d/postgresql stop
 
 USER root
 
@@ -109,9 +78,6 @@ USER root
 CMD ["/data/scripts/start_postgres.sh"]
 
 # Keep Postgres log, config and storage outside of union filesystem
-VOLUME ["/var/log/postgresql", \
-        "/var/log/supervisor", \
-        "/etc/postgresql/9.3/main", \
-        "/var/lib/postgresql/9.3/main"]
+VOLUME ["/var/log/postgresql", "/var/log/supervisor", "/etc/postgresql/9.3/main", "/var/lib/postgresql/9.3/main"]
 
 EXPOSE 5432
