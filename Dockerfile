@@ -75,6 +75,14 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get remove --purge -y wget &&\
 COPY ./pg_hba.conf     /etc/postgresql/$VERSION/main/
 COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
+# Copy wal-e cron
+COPY ./wal-e.conf /etc/cron.d/
+
+# Copy ENV
+#COPY ./AWS_ACCESS_KEY_ID      /etc/wal-e.d/env/
+#COPY ./AWS_SECRET_ACCESS_KEY  /etc/wal-e.d/env/
+#COPY ./WALE_S3_PREFIX         /etc/wal-e.d/env/
+
 # COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
 
