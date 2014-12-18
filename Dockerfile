@@ -31,8 +31,7 @@ RUN umask u=rwx,g=rx,o= && mkdir -p /etc/wal-e.d/env && chown -R root:postgres /
 # Clean up APT and temporary files
 RUN DEBIAN_FRONTEND=noninteractive apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
-# Copy basic Postgres configs with values suitable for development
-# (note: these should be overridden in production!)
+# Copy Postgres configs
 COPY ./pg_hba.conf     /etc/postgresql/$VERSION/main/
 COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 
@@ -52,15 +51,8 @@ COPY runit/cron     /etc/service/cron/run
 COPY runit/postgres /etc/service/postgres/run
 RUN  chmod 755 /etc/service/cron/run /etc/service/postgres/run
 
-USER postgres
-
-RUN /etc/init.d/postgresql start psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" && /etc/init.d/postgresql stop
-
-USER root
-
-# The image only runs Postgres by default. If you want to run periodic full
-# backups with cron + WAL-E you should start supervisord instead (see README)
-CMD ["/data/scripts/start_postgres.sh"]
+# Start with cron + WAL-E
+CMD ["/sbin/my_init"]
 
 # Keep Postgres log, config and storage outside of union filesystem
 VOLUME ["/var/log/postgresql", "/var/log/supervisor", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
