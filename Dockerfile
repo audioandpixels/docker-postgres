@@ -1,8 +1,6 @@
 FROM       phusion/baseimage:0.9.15
 MAINTAINER Jason Cox <jason@audioandpixels.com>
 
-ENV DEBIAN_FRONTEND noninteractive
-
 ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.3
@@ -22,16 +20,13 @@ COPY locale /etc/default/locale
 RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 # Update APT
-RUN apt-get update
-
-# Install build dependencies
-RUN apt-get install -y wget
+RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # Install Postgres
-RUN apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresql-server-dev-$VERSION
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresql-server-dev-$VERSION
 
 # Install WAL-E dependencies
-RUN apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-dev lzop pv git
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-dev lzop pv git
 
 # Install WAL-E
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
@@ -40,8 +35,8 @@ RUN pip install git+https://github.com/audioandpixels/wal-e@v0.7.3-fixed
 # Create directory for storing secret WAL-E environment variables
 RUN umask u=rwx,g=rx,o= && mkdir -p /etc/wal-e.d/env && chown -R root:postgres /etc/wal-e.d
 
-# Remove build dependencies and clean up APT and temporary files
-RUN apt-get remove --purge -y wget && apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+# Clean up APT and temporary files
+RUN DEBIAN_FRONTEND=noninteractive apt-get clean && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 
 # Copy basic Postgres configs with values suitable for development
 # (note: these should be overridden in production!)
