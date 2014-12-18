@@ -10,7 +10,16 @@ $ docker build -t audioandpixels/postgres github.com/audioandpixels/docker-postg
 ## Basic usage
 
 ```
-$ docker run -d -v "$HOME/postgresdata":"/var/lib/postgresql/9.3/main" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX= -e PASSWORD= audioandpixels/postgres
+$ mkdir $HOME/postgresdata && chown root:root $HOME/postgresdata && chmod 0700 $HOME/postgresdata
+```
+
+Fill it with data...
+```
+$ su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
+```
+Start the container...
+
+$ docker run -d -v "$HOME/postgresdata":"/var/lib/postgresql/9.3/main" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX=s3://some-bucket/directory -e PASSWORD=xxxx audioandpixels/postgres /sbin/my_init
 ```
 
 ## WAL-E usage

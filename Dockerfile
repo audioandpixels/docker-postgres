@@ -40,9 +40,9 @@ COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 COPY ./wal-e /etc/cron.d/
 
 # Setup ENV
-RUN echo "$AWS_SECRET_ACCESS_KEY" > /etc/wal-e.d/env/AWS_SECRET_ACCESS_KEY
-RUN echo "$AWS_ACCESS_KEY_ID"     > /etc/wal-e.d/env/AWS_ACCESS_KEY_ID
-RUN echo "$WALE_S3_PREFIX"        > /etc/wal-e.d/env/WALE_S3_PREFIX
+# RUN echo "$AWS_SECRET_ACCESS_KEY" > /etc/wal-e.d/env/AWS_SECRET_ACCESS_KEY
+# RUN echo "$AWS_ACCESS_KEY_ID"     > /etc/wal-e.d/env/AWS_ACCESS_KEY_ID
+# RUN echo "$WALE_S3_PREFIX"        > /etc/wal-e.d/env/WALE_S3_PREFIX
 
 # COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
