@@ -1,4 +1,4 @@
-FROM       phusion/baseimage:0.9.12
+FROM       phusion/baseimage:0.9.15
 MAINTAINER Jason Cox <jason@audioandpixels.com>
 
 ENV USERNAME postgres
@@ -33,7 +33,7 @@ RUN apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-
 
 # Install WAL-E
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
-RUN pip install wal-e && ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
+RUN pip install git+https://github.com/audioandpixels/wal-e@v0.7.3-fixed && ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
 
 # Create directory for storing secret WAL-E environment variables
 RUN umask u=rwx,g=rx,o= && mkdir -p /etc/wal-e.d/env && chown -R root:postgres /etc/wal-e.d
