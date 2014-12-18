@@ -10,7 +10,7 @@ RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh /etc/cron.
 
 # Ensure UTF-8 locale
 COPY locale /etc/default/locale
-RUN  locale-gen en_US.UTF-8 && dpkg-reconfigure locales
+RUN  DEBIAN_FRONTEND=noninteractive locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 # Update APT
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
