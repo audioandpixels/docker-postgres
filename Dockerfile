@@ -2,22 +2,15 @@ FROM       phusion/baseimage:0.9.15
 MAINTAINER Jason Cox <jason@audioandpixels.com>
 
 ENV USERNAME postgres
-ENV PASSWORD password
 ENV VERSION  9.3
 
 # Disable SSH and existing cron jobs
-RUN rm -rf /etc/service/sshd \
-  /etc/my_init.d/00_regen_ssh_host_keys.sh \
-  /etc/cron.daily/dpkg \
-  /etc/cron.daily/apt \
-  /etc/cron.daily/passwd \
-  /etc/cron.daily/logrotate \
-  /etc/cron.daily/upstart \
-  /etc/cron.weekly/fstrim
+RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh /etc/cron.daily/dpkg /etc/cron.daily/apt \
+           /etc/cron.daily/passwd /etc/cron.daily/logrotate /etc/cron.daily/upstart /etc/cron.weekly/fstrim
 
 # Ensure UTF-8 locale
 COPY locale /etc/default/locale
-RUN locale-gen en_US.UTF-8 && dpkg-reconfigure locales
+RUN  locale-gen en_US.UTF-8 && dpkg-reconfigure locales
 
 # Update APT
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
@@ -46,28 +39,27 @@ COPY ./postgresql.conf /etc/postgresql/$VERSION/main/
 # Copy wal-e cron
 COPY ./wal-e /etc/cron.d/
 
-# Copy ENV
-#COPY ./AWS_ACCESS_KEY_ID      /etc/wal-e.d/env/
-#COPY ./AWS_SECRET_ACCESS_KEY  /etc/wal-e.d/env/
-#COPY ./WALE_S3_PREFIX         /etc/wal-e.d/env/
+# Setup ENV
+RUN echo "$AWS_SECRET_ACCESS_KEY" > /etc/wal-e.d/env/AWS_SECRET_ACCESS_KEY
+RUN echo "$AWS_ACCESS_KEY_ID"     > /etc/wal-e.d/env/AWS_ACCESS_KEY_ID
+RUN echo "$WALE_S3_PREFIX"        > /etc/wal-e.d/env/WALE_S3_PREFIX
 
 # COPY sets ownership on this directory to root
 RUN chown -R postgres:postgres /etc/postgresql/$VERSION/main
 
 # Use wrapper scripts to start cron and Postgres
 COPY scripts /data/scripts
-RUN chmod -R 755 /data/scripts
+RUN  chmod -R 755 /data/scripts
 
 # Copy runit configs
-RUN mkdir -m 755 -p /etc/service/postgres
+RUN  mkdir -m 755 -p /etc/service/postgres
 COPY runit/cron     /etc/service/cron/run
 COPY runit/postgres /etc/service/postgres/run
-RUN chmod 755 /etc/service/cron/run /etc/service/postgres/run
+RUN  chmod 755 /etc/service/cron/run /etc/service/postgres/run
 
 USER postgres
 
-RUN /etc/init.d/postgresql start &&\
-  psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" && /etc/init.d/postgresql stop
+RUN /etc/init.d/postgresql start psql --command "ALTER USER postgres WITH PASSWORD '$PASSWORD';" && /etc/init.d/postgresql stop
 
 USER root
 
@@ -76,6 +68,6 @@ USER root
 CMD ["/data/scripts/start_postgres.sh"]
 
 # Keep Postgres log, config and storage outside of union filesystem
-VOLUME ["/var/log/postgresql", "/var/log/supervisor", "/etc/postgresql/9.3/main", "/var/lib/postgresql/9.3/main"]
+VOLUME ["/var/log/postgresql", "/var/log/supervisor", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
 
 EXPOSE 5432

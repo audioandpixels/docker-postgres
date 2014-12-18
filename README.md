@@ -1,14 +1,16 @@
 # Postgres Dockerfile
 
-Docker image for Postgres 9.3 + WAL-E + PL/Python and PL/V8 languages
+Docker image for Postgres 9.3 + WAL-E
+
+## Build the image
+```
+$ docker build -t audioandpixels/postgres github.com/audioandpixels/docker-postgres
+```
 
 ## Basic usage
 
 ```
-$ docker run -p 5432:5432 abevoelker/postgres
-2014-07-31 06:11:07 UTC LOG:  database system was shut down at 2014-07-31 05:52:53 UTC
-2014-07-31 06:11:07 UTC LOG:  database system is ready to accept connections
-2014-07-31 06:11:07 UTC LOG:  autovacuum launcher started
+$ docker run -d -v "$HOME/postgresdata":"/var/lib/postgresql/9.3/main" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX= -e PASSWORD= audioandpixels/postgres
 ```
 
 ## WAL-E usage
