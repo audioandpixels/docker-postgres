@@ -1,6 +1,8 @@
 FROM       phusion/baseimage:0.9.15
 MAINTAINER Jason Cox <jason@audioandpixels.com>
 
+ENV DEBIAN_FRONTEND noninteractive
+
 ENV USERNAME postgres
 ENV PASSWORD password
 ENV VERSION  9.3
