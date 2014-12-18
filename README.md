@@ -3,27 +3,29 @@
 Docker image for Postgres 9.3 + WAL-E
 
 ## Build the image
-```
+```shell
 $ docker build -t audioandpixels/postgres github.com/audioandpixels/docker-postgres
 ```
 
 ## Basic usage
 
-```
+```shell
 $ mkdir $HOME/postgresdata && chown root:root $HOME/postgresdata && chmod 0700 $HOME/postgresdata
 ```
 
 Fill it with data...
-```
+```shell
 $ su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
 ```
+
 Start the container...
 
 If you want to store the WAL-E backups in a directory matching the ip of the host substitute directory with:
-```
+```shell
 $(/sbin/ifconfig | grep -A1 eth | grep "inet addr" | head -1 | sed "s/[^0-9]*\([0-9.]*\).*/\1/")
 ```
-```
+
+```shell
 $ docker run -d -v "$HOME/postgresdata":"/var/lib/postgresql/9.3/main" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX=s3://some-bucket/directory -e PASSWORD=xxxx audioandpixels/postgres /sbin/my_init
 ```
 
