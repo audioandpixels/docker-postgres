@@ -33,7 +33,6 @@ RUN apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-
 
 # Install WAL-E
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
-RUN pip install --upgrade setuptools
 RUN pip install wal-e && ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
 
 # Create directory for storing secret WAL-E environment variables
