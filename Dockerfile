@@ -1,4 +1,4 @@
-FROM       phusion/baseimage:0.9.12
+FROM       phusion/baseimage:0.9.15
 MAINTAINER Jason Cox <jason@audioandpixels.com>
 
 ENV USERNAME postgres
@@ -32,6 +32,7 @@ RUN apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresq
 RUN apt-get install -y libxml2-dev libxslt1-dev python-dev python-pip daemontools libevent-dev lzop pv
 
 # Install WAL-E
+RUN pip install --upgrade setuptools
 RUN pip install wal-e && ln -s /var/lib/postgresql/wal-e/bin/wal-e /usr/local/bin/wal-e
 
 # Create directory for storing secret WAL-E environment variables
