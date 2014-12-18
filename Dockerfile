@@ -29,7 +29,7 @@ RUN apt-get install -y wget
 RUN apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresql-server-dev-$VERSION
 
 # Install WAL-E dependencies
-RUN apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-dev lzop pv
+RUN apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-dev lzop pv git
 
 # Install WAL-E
 RUN curl https://bootstrap.pypa.io/get-pip.py | python
