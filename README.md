@@ -34,7 +34,7 @@ $ mkdir $HOME/postgres/log && chown root:root $HOME/postgres/log && chmod 0700 $
 
 ####Initialize postgres data if you have none
 ```shell
-$ su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
+$ docker run -v "$HOME/postgres/data":"/var/lib/postgresql/9.3/main" audioandpixels/postgres su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
 ```
 
 ####Start the container...
