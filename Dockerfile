@@ -6,7 +6,7 @@ ENV VERSION  9.3
 
 # Disable SSH and existing cron jobs
 RUN rm -rf /etc/service/sshd /etc/my_init.d/00_regen_ssh_host_keys.sh /etc/cron.daily/dpkg /etc/cron.daily/apt \
-           /etc/cron.daily/passwd /etc/cron.daily/logrotate /etc/cron.daily/upstart /etc/cron.weekly/fstrim
+           /etc/cron.daily/passwd /etc/cron.daily/upstart /etc/cron.weekly/fstrim
 
 # Ensure UTF-8 locale
 COPY locale /etc/default/locale
@@ -56,6 +56,6 @@ RUN  chmod 755 /etc/service/cron/run /etc/service/postgres/run
 CMD ["/sbin/my_init"]
 
 # Keep Postgres log, config and storage outside of union filesystem
-VOLUME ["/var/log/postgresql", "/var/log/supervisor", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
+VOLUME ["/var/log/postgresql", "/var/log/runit", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
 
 EXPOSE 5432
