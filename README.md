@@ -28,7 +28,7 @@ $(/sbin/ifconfig | grep -A1 eth | grep "inet addr" | head -1 | sed "s/[^0-9]*\([
 ```
 
 ```shell
-$ docker run -d -p 5432:5432 -v "$HOME/postgres/data":"/var/lib/postgresql/9.3/main" -v "$HOME/postgres/log":"/var/log/postgresql" -v "$HOME/postgres/log":"/var/log/runit" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX=s3://some-bucket/directory -e PASSWORD=xxxx audioandpixels/postgres
+$ docker run -d -p 5432:5432 -v "$HOME/postgres/data":"/var/lib/postgresql/9.3/main" -v "$HOME/postgres/log":"/var/log" -e AWS_SECRET_ACCESS_KEY=xxxxxxxx -e AWS_ACCESS_KEY_ID=xxxxxxxx -e WALE_S3_PREFIX=s3://some-bucket/directory -e PASSWORD=xxxx audioandpixels/postgres
 ```
 
 ## WAL-E

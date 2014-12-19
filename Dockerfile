@@ -52,10 +52,15 @@ COPY runit/cron     /etc/service/cron/run
 COPY runit/postgres /etc/service/postgres/run
 RUN  chmod 755 /etc/service/cron/run /etc/service/postgres/run
 
+# Configure syslog-ng for postgres
+RUN echo 'destination postgres { file("/var/log/postgres"); };' >> /etc/syslog-ng/syslog-ng.conf
+RUN echo 'filter f_postgres { facility(local0); };' >> /etc/syslog-ng/syslog-ng.conf
+RUN echo 'log { source(src); filter(f_postgres); destination(postgres); };' >> /etc/syslog-ng/syslog-ng.conf
+
 # Start with cron + WAL-E
 CMD ["/sbin/my_init"]
 
 # Keep Postgres log, config and storage outside of union filesystem
-VOLUME ["/var/log/postgresql", "/var/log/runit", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
+VOLUME ["/var/log/", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
 
 EXPOSE 5432
