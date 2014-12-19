@@ -53,7 +53,7 @@ COPY runit/postgres /etc/service/postgres/run
 RUN  chmod 755 /etc/service/cron/run /etc/service/postgres/run
 
 # Configure syslog-ng for postgres
-RUN echo 'destination postgres { file("/var/log/postgres"); };' >> /etc/syslog-ng/syslog-ng.conf
+RUN echo 'destination postgres { file("/var/log/postgres.log"); };' >> /etc/syslog-ng/syslog-ng.conf
 RUN echo 'filter f_postgres { facility(local0); };' >> /etc/syslog-ng/syslog-ng.conf
 RUN echo 'log { source(s_src); filter(f_postgres); destination(postgres); };' >> /etc/syslog-ng/syslog-ng.conf
 

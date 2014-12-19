@@ -1,4 +1,4 @@
-# Postgres Dockerfile
+# Docker Postgres
 
 Docker image for Postgres 9.3 + WAL-E
 
@@ -7,22 +7,39 @@ Docker image for Postgres 9.3 + WAL-E
 $ docker build -t audioandpixels/postgres github.com/audioandpixels/docker-postgres
 ```
 
+## Container requirements
+
+#### Environment Variables
+```
+AWS_SECRET_ACCESS_KEY=xxxxxxxx
+AWS_ACCESS_KEY_ID=xxxxxxxx
+WALE_S3_PREFIX=s3://some-bucket/directory
+PG_PASSWORD=xxxx
+```
+
+####External volumes
+```
+$HOME/postgres/data
+$HOME/postgres/log
+```
+
 ## Basic usage
 
+####Create external volumes
 ```shell
 $ mkdir $HOME/postgres && chown root:root $HOME/postgres && chmod 0700 $HOME/postgres
 $ mkdir $HOME/postgres/data && chown root:root $HOME/postgres/data && chmod 0700 $HOME/postgres/data
 $ mkdir $HOME/postgres/log && chown root:root $HOME/postgres/log && chmod 0700 $HOME/postgres/log
 ```
 
-Fill it with data...
+####Initialize postgres data if you have none
 ```shell
 $ su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
 ```
 
-Start the container...
+####Start the container...
 
-If you want to store the WAL-E backups in a directory matching the ip of the host substitute directory with:
+If you want WAL-E backups in a directory named ip of host, substitute directory with:
 ```shell
 $(/sbin/ifconfig | grep -A1 eth | grep "inet addr" | head -1 | sed "s/[^0-9]*\([0-9.]*\).*/\1/")
 ```
@@ -33,9 +50,9 @@ $ docker run -d -p 5432:5432 -v "$HOME/postgres/data":"/var/lib/postgresql/9.3/m
 
 ## WAL-E
 
-This image comes with [WAL-E][wal-e] for performing continuous archiving of PostgreSQL WAL files and base backups.  To use WAL-E, you need to do a few things:
+This image includes [WAL-E][wal-e] for performing continuous archiving of PostgreSQL WAL files and base backups.
 
-The container starts with `/sbin/my_init` and starts cron, syslog, and Postgres. In this mode, [runit][runit] manages the cron and Postgres processes and will restart them automatically if they crash.
+The image starts cron, syslog, and Postgres. [runit][runit] manages the cron and Postgres processes and will restart them automatically if they crash.
 
 ## License
 
