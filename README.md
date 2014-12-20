@@ -25,13 +25,6 @@ $HOME/postgres/log
 
 ## Basic usage
 
-####Create external volumes
-```shell
-$ mkdir $HOME/postgres && chown root:root $HOME/postgres && chmod 0700 $HOME/postgres
-$ mkdir $HOME/postgres/data && chown root:root $HOME/postgres/data && chmod 0700 $HOME/postgres/data
-$ mkdir $HOME/postgres/log && chown root:root $HOME/postgres/log && chmod 0700 $HOME/postgres/log
-```
-
 ####Initialize postgres data if you have none
 ```shell
 $ docker run -v "$HOME/postgres/data":"/var/lib/postgresql/9.3/main" audioandpixels/postgres su postgres --command "/usr/lib/postgresql/9.3/bin/initdb -D /var/lib/postgresql/9.3/main"
