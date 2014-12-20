@@ -60,7 +60,7 @@ RUN echo 'log { source(s_src); filter(f_postgres); destination(postgres); };' >>
 # Start with cron + WAL-E
 CMD ["/sbin/my_init"]
 
-# Keep Postgres log, config and storage outside of union filesystem
+# Keep Postgres log and storage outside of union filesystem
 VOLUME ["/var/log/", "/etc/postgresql/$VERSION/main", "/var/lib/postgresql/$VERSION/main"]
 
 EXPOSE 5432
