@@ -19,6 +19,9 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update
 # Install Postgres
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-$VERSION postgresql-contrib-$VERSION postgresql-server-dev-$VERSION
 
+# Install Postgis
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y postgresql-$VERSION-postgis-2.1 postgis
+
 # Install WAL-E dependencies
 RUN DEBIAN_FRONTEND=noninteractive apt-get install -y libxml2-dev libxslt1-dev python-dev daemontools libevent-dev lzop pv git
 
