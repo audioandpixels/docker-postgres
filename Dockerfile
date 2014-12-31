@@ -14,6 +14,8 @@ RUN  DEBIAN_FRONTEND=noninteractive locale-gen en_US.UTF-8
 RUN  DEBIAN_FRONTEND=noninteractive dpkg-reconfigure locales
 
 # Update APT
+RUN echo "deb http://apt.postgresql.org/pub/repos/apt trusty-pgdg main" >> /etc/apt/sources.list
+RUN curl http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc | sudo apt-key add -
 RUN DEBIAN_FRONTEND=noninteractive apt-get update
 
 # Install Postgres
